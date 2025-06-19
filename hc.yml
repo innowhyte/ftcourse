@@ -11,10 +11,18 @@ lora_fan_in_fan_out: false
 data_seed: 49
 seed: 49
 
+chat_template: alpaca
+
 datasets:
-  - path: sample_data/alpaca_synth_queries.jsonl
-    type: sharegpt
-    conversation: alpaca
+  - path: /content/ftcourse/sample_data/alpaca_synth_queries.jsonl
+    type: chat_template
+
+    field_messages: conversations
+    message_property_mappings:
+      role: from
+      content: value
+
+
 dataset_prepared_path: last_run_prepared
 val_set_size: 0.1
 output_dir: ./qlora-alpaca-out
@@ -41,8 +49,8 @@ lora_target_modules:
   - k_proj
   - o_proj
 
-wandb_project: hc-axolotl-mistral
-wandb_entity: hamelsmu
+# wandb_project: hc-axolotl-mistral
+# wandb_entity: hamelsmu
 
 gradient_accumulation_steps: 4
 micro_batch_size: 16
@@ -68,7 +76,7 @@ resume_from_checkpoint:
 local_rank:
 logging_steps: 1
 xformers_attention:
-flash_attention: true
+flash_attention: false
 
 loss_watchdog_threshold: 5.0
 loss_watchdog_patience: 3
