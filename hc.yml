@@ -14,7 +14,7 @@ seed: 49
 chat_template: alpaca
 
 datasets:
-  - path: /content/ftcourse/sample_data/alpaca_synth_queries.jsonl
+  - path: /content/drive/MyDrive/ftcourse/sample_data/alpaca_synth_queries.jsonl
     type: chat_template
 
     field_messages: conversations
@@ -26,7 +26,7 @@ datasets:
 dataset_prepared_path: last_run_prepared
 val_set_size: 0.1
 output_dir: ./qlora-alpaca-out
-hub_model_id: hamel/hc-mistral-alpaca
+# hub_model_id: hamel/hc-mistral-alpaca
 
 adapter: qlora
 lora_model_dir:
@@ -76,7 +76,7 @@ resume_from_checkpoint:
 local_rank:
 logging_steps: 1
 xformers_attention:
-flash_attention: false
+flash_attention: true
 
 loss_watchdog_threshold: 5.0
 loss_watchdog_patience: 3
