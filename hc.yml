@@ -1,18 +1,23 @@
-base_model: google/gemma-3-4b-it
+base_model: microsoft/Phi-3-mini-4k-instruct
 
 load_in_4bit: true
 
-# gemma3 doesn't seem to play nice with ddp
 ddp_find_unused_parameters: true
 
-chat_template: gemma3
+chat_template: |
+  {% for message in messages %}
+    <|{{ message['role'] }}|>
+    {{ message['content'] }}
+    <|end|>
+  {% endfor %}
+  {% if add_generation_prompt %}
+    <|assistant|>
+  {% endif %}
+
 datasets:
-  - path: vijay-delete/flirty_conversations_dataset_jsonl
-    type: chat_template
-    field_messages: conversations
-    message_property_mappings:
-      role: from
-      content: value
+  - path: suryanagar_training.json  # Your converted dataset
+    type: json
+    field: messages
 
 dataset_prepared_path: last_run_prepared
 val_set_size: 0.01
@@ -26,7 +31,7 @@ sample_packing: true
 pad_to_sequence_len: true
 
 lora_r: 32
-lora_alpha: 16
+lora_alpha: 64
 lora_dropout: 0.05
 lora_target_modules: 'model.language_model.layers.[\d]+.(mlp|cross_attn|self_attn).(up|down|gate|q|k|v|o)_proj'
 
