@@ -1,65 +1,98 @@
 base_model: microsoft/Phi-3-mini-4k-instruct
+model_type: Phi3ForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
 
+load_in_8bit: false
 load_in_4bit: true
+strict: false
 
-ddp_find_unused_parameters: true
+lora_fan_in_fan_out: false
+data_seed: 49
+seed: 49
 
-chat_template: |
-  {% for message in messages %}
-    <|{{ message['role'] }}|>
-    {{ message['content'] }}
-    <|end|>
-  {% endfor %}
-  {% if add_generation_prompt %}
-    <|assistant|>
-  {% endif %}
+chat_template: alpaca
 
 datasets:
-  - path: suryanagar_training.json  # Your converted dataset
-    type: json
-    field: messages
+  - path: /content/drive/MyDrive/ftcourse/sample_data/alpaca_synth_queries.jsonl
+    type: chat_template
+
+    field_messages: conversations
+    message_property_mappings:
+      role: role
+      content: content
+
 
 dataset_prepared_path: last_run_prepared
-val_set_size: 0.01
-output_dir: ./outputs/out
+val_set_size: 0.1
+output_dir: ./out
+# hub_model_id: hamel/hc-mistral-alpaca
 
 adapter: qlora
 lora_model_dir:
 
 sequence_len: 2048
-sample_packing: true
+sample_packing: false
 pad_to_sequence_len: true
 
 lora_r: 32
 lora_alpha: 64
 lora_dropout: 0.05
-lora_target_modules: 'model.language_model.layers.[\d]+.(mlp|cross_attn|self_attn).(up|down|gate|q|k|v|o)_proj'
+lora_target_linear: true
+lora_fan_in_fan_out:
+lora_target_modules: 
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
 
-# wandb_project:
-# wandb_entity:
-# wandb_watch:
-# wandb_name:
-# wandb_log_model:
+# wandb_project: hc-axolotl-mistral
+# wandb_entity: hamelsmu
 
 gradient_accumulation_steps: 4
-micro_batch_size: 2
-num_epochs: 1
-optimizer: adamw_bnb_8bit
+micro_batch_size: 16
+eval_batch_size: 16
+num_epochs: 3
+optimizer: paged_adamw_32bit
 lr_scheduler: cosine
-learning_rate: 0.0002
+learning_rate: 2.0e-5
+max_grad_norm: 1.0
+adam_beta2: 0.95
+adam_epsilon: 0.00001
+save_total_limit: 12
 
+train_on_inputs: false
+group_by_length: false
 bf16: true
-fp16:
-tf32: true
+fp16: false
+tf32: false
 
 gradient_checkpointing: true
-gradient_checkpointing_kwargs:
-  use_reentrant: false
+early_stopping_patience:
+resume_from_checkpoint:
+local_rank:
 logging_steps: 1
+xformers_attention:
 flash_attention: true
-eager_attention:
 
-warmup_ratio: 0.1
-evals_per_epoch: 1
-saves_per_epoch: 1
+loss_watchdog_threshold: 5.0
+loss_watchdog_patience: 3
+
+warmup_steps: 20
+evals_per_epoch: 4
+eval_table_size:
+eval_table_max_new_tokens: 128
+saves_per_epoch: 6
+debug:
 weight_decay: 0.0
+fsdp:
+fsdp_config:
+special_tokens:
+  bos_token: "<s>"
+  eos_token: "</s>"
+  unk_token: "<unk>"
+  pad_token: "<|end|>"
+save_safetensors: true
