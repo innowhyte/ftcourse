@@ -1,3 +1,105 @@
+# base_model: microsoft/Phi-3-mini-4k-instruct
+# model_type: Phi3ForCausalLM
+# tokenizer_type: AutoTokenizer
+# trust_remote_code: true
+
+# load_in_8bit: false
+# load_in_4bit: true
+# strict: false
+
+# lora_fan_in_fan_out: false
+# data_seed: 49
+# seed: 49
+
+# chat_template: alpaca
+
+# datasets:
+#   - path: /content/drive/MyDrive/ftcourse/sample_data/phi3_story_training_end.jsonl  
+#     type: chat_template
+
+#     field_messages: messages
+#     message_property_mappings:
+#       role: role
+#       content: content
+
+
+# dataset_prepared_path: last_run_prepared
+# val_set_size: 0.1
+# output_dir: ./out
+# # hub_model_id: hamel/hc-mistral-alpaca
+
+# adapter: qlora
+# lora_model_dir:
+
+# sequence_len: 2048
+# sample_packing: false
+# pad_to_sequence_len: true
+
+# lora_r: 32
+# lora_alpha: 64
+# lora_dropout: 0.05
+# lora_target_linear: true
+# lora_target_modules: 
+#   - q_proj
+#   - k_proj
+#   - v_proj
+#   - o_proj
+#   - gate_proj
+#   - up_proj
+#   - down_proj
+
+# wandb_project: knowledge-ft-phi3
+# wandb_entity: vijayverma
+
+# gradient_accumulation_steps: 4
+# micro_batch_size: 16
+# eval_batch_size: 16
+# num_epochs: 3 #3-2  -- to remove overfitting and invention(hallucination)
+# optimizer: paged_adamw_32bit
+# lr_scheduler: cosine
+# learning_rate: 2.0e-5 #2.0e-5-1.5e-5  -- to make model to take smaller and more careful steps while training
+# max_grad_norm: 1.0
+# adam_beta2: 0.95
+# adam_epsilon: 0.00001
+# save_total_limit: 12
+
+# train_on_inputs: false
+# group_by_length: false
+# bf16: true
+# fp16: false
+# tf32: false
+
+# gradient_checkpointing: true
+# early_stopping_patience:
+# resume_from_checkpoint:
+# local_rank:
+# logging_steps: 1
+# xformers_attention:
+# flash_attention: true
+
+# loss_watchdog_threshold: 5.0
+# loss_watchdog_patience: 3
+
+# warmup_steps: 20
+# evals_per_epoch: 4
+# eval_table_size:
+# eval_table_max_new_tokens: 128
+# saves_per_epoch: 6
+# debug:
+# weight_decay: 0.0
+# fsdp:
+# fsdp_config:
+# special_tokens:
+#   bos_token: "<s>"
+#   eos_token: "<|end|>" # end of sentence
+#   unk_token: "<unk>"
+
+# save_safetensors: true
+
+
+
+
+
 base_model: microsoft/Phi-3-mini-4k-instruct
 model_type: Phi3ForCausalLM
 tokenizer_type: AutoTokenizer
@@ -11,17 +113,28 @@ lora_fan_in_fan_out: false
 data_seed: 49
 seed: 49
 
-chat_template: alpaca
+# chat_template: tokenizer_default
+
+# datasets:
+#   - path: /content/drive/MyDrive/ftcourse/sample_data/auryn_qna.jsonl  
+#     type: chat_template
+
+#     field_messages: messages
+#     message_property_mappings:
+#       role: role
+#       content: content
+
+chat_template: phi_3  # CHANGE THIS from tokenizer_default
 
 datasets:
-  - path: /content/drive/MyDrive/ftcourse/sample_data/alpaca_synth_queries.jsonl
+  - path: /content/drive/MyDrive/ftcourse/sample_data/auryn_qna.jsonl  
     type: chat_template
-
-    field_messages: conversations
+    field_messages: messages
     message_property_mappings:
       role: role
       content: content
 
+train_on_inputs: false
 
 dataset_prepared_path: last_run_prepared
 val_set_size: 0.1
@@ -39,7 +152,6 @@ lora_r: 32
 lora_alpha: 64
 lora_dropout: 0.05
 lora_target_linear: true
-lora_fan_in_fan_out:
 lora_target_modules: 
   - q_proj
   - k_proj
@@ -49,16 +161,211 @@ lora_target_modules:
   - up_proj
   - down_proj
 
-# wandb_project: hc-axolotl-mistral
-# wandb_entity: hamelsmu
+# wandb_project: knowledge-ft-phi3
+# wandb_entity: innowhyte
 
 gradient_accumulation_steps: 4
 micro_batch_size: 16
 eval_batch_size: 16
-num_epochs: 3
+num_epochs: 2 #3-2  -- to remove overfitting and invention(hallucination)
 optimizer: paged_adamw_32bit
 lr_scheduler: cosine
-learning_rate: 2.0e-5
+learning_rate: 2.0e-5 #2.0e-5-1.5e-5  -- to make model to take smaller and more careful steps while training
+max_grad_norm: 1.0
+adam_beta2: 0.95
+adam_epsilon: 0.00001
+save_total_limit: 12
+
+train_on_inputs: false
+group_by_length: true
+bf16: true
+fp16: false
+tf32: false
+
+gradient_checkpointing: true
+early_stopping_patience:
+resume_from_checkpoint:
+local_rank:
+logging_steps: 1
+xformers_attention:
+flash_attention: true
+
+loss_watchdog_threshold: 5.0
+loss_watchdog_patience: 3
+
+warmup_steps: 20
+evals_per_epoch: 4
+eval_table_size:
+eval_table_max_new_tokens: 128
+saves_per_epoch: 6
+debug:
+weight_decay: 0.0
+fsdp:
+fsdp_config:
+special_tokens:
+  bos_token: "<s>"
+  eos_token: "<|end|>" # end of sentence
+  unk_token: "<unk>"
+
+save_safetensors: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+base_model: microsoft/Phi-3-mini-4k-instruct
+# optionally might have model_type or tokenizer_type
+trust_remote_code: true
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+# Automatically upload checkpoint and final model to HF
+# hub_model_id: username/custom_model_name
+
+chat_template: phi_3
+
+datasets:
+  - path: /content/drive/MyDrive/ftcourse/sample_data/phi3_story_training.jsonl  
+    type: alpaca:phi
+
+dataset_prepared_path:
+val_set_size: 0.01
+output_dir: ./out
+
+sequence_len: 4096
+sample_packing: true
+pad_to_sequence_len: true
+
+adapter: lora
+lora_model_dir:
+lora_r: 64
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target_linear: true
+
+gradient_accumulation_steps: 1
+micro_batch_size: 2
+num_epochs: 1
+optimizer: adamw_torch_fused
+adam_beta2: 0.95
+adam_epsilon: 0.00001
+max_grad_norm: 1.0
+lr_scheduler: cosine
+learning_rate: 5.0e-6
+
+bf16: auto
+
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: True
+early_stopping_patience: 3
+logging_steps: 1
+flash_attention: true
+
+eval_steps: 1000
+save_steps: 5000
+eval_batch_size: 2
+eval_sample_packing: false
+eval_table_size: 2
+eval_max_new_tokens: 32
+eval_causal_lm_metrics: ["perplexity"]
+do_causal_lm_eval: true
+
+warmup_ratio: 0.2
+debug: true
+weight_decay: 0.1
+resize_token_embeddings_to_32x: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+base_model: microsoft/Phi-3-mini-4k-instruct
+model_type: Phi3ForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
+
+load_in_8bit: false
+load_in_4bit: true
+strict: false
+
+lora_fan_in_fan_out: false
+data_seed: 49
+seed: 49
+
+
+chat_template: phi_3
+
+datasets:
+  - path: /content/drive/MyDrive/ftcourse/sample_data/phi3_story_training.jsonl  
+    type: alpaca:phi
+
+dataset_prepared_path: last_run_prepared
+val_set_size: 0.1
+output_dir: ./out
+# hub_model_id: hamel/hc-mistral-alpaca
+
+adapter: qlora
+lora_model_dir:
+
+sequence_len: 2048
+sample_packing: false
+pad_to_sequence_len: true
+
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.05
+lora_target_linear: true
+lora_target_modules: 
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+# wandb_project: knowledge-ft-phi3
+# wandb_entity: vijayverma
+
+gradient_accumulation_steps: 4
+micro_batch_size: 16
+eval_batch_size: 16
+num_epochs: 3 #3-2  -- to remove overfitting and invention(hallucination)
+optimizer: paged_adamw_32bit
+lr_scheduler: cosine
+learning_rate: 2.0e-5 #2.0e-5-1.5e-5  -- to make model to take smaller and more careful steps while training
 max_grad_norm: 1.0
 adam_beta2: 0.95
 adam_epsilon: 0.00001
@@ -92,7 +399,212 @@ fsdp:
 fsdp_config:
 special_tokens:
   bos_token: "<s>"
-  eos_token: "</s>"
+  eos_token: "<|end|>" # end of sentence
   unk_token: "<unk>"
-  pad_token: "<|end|>"
+
 save_safetensors: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+base_model: microsoft/Phi-3-mini-4k-instruct
+model_type: Phi3ForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
+
+load_in_8bit: false
+load_in_4bit: true
+strict: false
+
+# This tells axolotl to use the system prompt below for every conversation
+# that doesn't already have one. This is much more efficient.
+# You can now REMOVE the system message from most of your .jsonl entries.
+# Note: For this to work, you must change your dataset type to `sharegpt`.
+# It's a more flexible format that handles this pattern well.
+# Or, keep `type: chat_template` and ensure the system prompt is only in the first turn.
+system_prompt: "You are an expert on the story 'The Lorebook of the Suryanagar Cipher'. Your task is to provide a precise and accurate answer to the following question based only on the provided lorebook text. If the answer is not in the text, say so."
+
+chat_template: tokenizer_default
+
+datasets:
+  - path: /content/drive/MyDrive/ftcourse/sample_data/new_qnaa.jsonl
+    type: chat_template
+    field_messages: conversations
+    message_property_mappings:
+      role: from
+      content: value
+
+
+
+dataset_prepared_path: last_run_prepared
+val_set_size: 0.1
+output_dir: ./out
+
+adapter: qlora
+lora_model_dir:
+
+sequence_len: 2048
+sample_packing: true ## Turn on sample_packing. It's very efficient and packs multiple short conversations into one sequence.
+pad_to_sequence_len: false ## Turn this off. It's more efficient to pad to the longest sequence in a batch.
+
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.05
+# lora_target_linear: true ## This is redundant if you specify modules, remove it for clarity.
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+## HYPERPARAMETER CHANGES FOR A SMALL, HIGH-QUALITY DATASET
+gradient_accumulation_steps: 8 ## Increase accumulation to maintain a decent batch size with a smaller micro_batch_size
+micro_batch_size: 2 ## Decrease micro batch size drastically. This gives you more gradient updates per epoch.
+eval_batch_size: 4 ## Can reduce this too
+num_epochs: 5 ## Increase epochs. With more updates per epoch, you can train for longer without overfitting as quickly.
+optimizer: paged_adamw_32bit
+lr_scheduler: cosine
+learning_rate: 2.0e-5 # This is a good starting point, feel free to experiment with 1e-5 or 3e-5
+max_grad_norm: 1.0
+
+save_total_limit: 5
+
+train_on_inputs: false # This is correct, you only want to train on the assistant's answers.
+group_by_length: true ## This is very useful. It batches sequences of similar length together, reducing padding and increasing speed.
+bf16: true
+fp16: false
+tf32: false
+
+gradient_checkpointing: true
+logging_steps: 5 ## Log more frequently since steps are smaller.
+xformers_attention:
+flash_attention: true
+
+warmup_steps: 10
+evals_per_epoch: 2 # Evaluate a couple of times per epoch to watch for overfitting
+saves_per_epoch: 1 # Save once per epoch is fine
+
+## REMOVE THIS ENTIRE BLOCK.
+## `tokenizer_type: AutoTokenizer` and `chat_template: tokenizer_default` will load the correct
+## tokens and template from the Phi-3 model card. Manually setting them can cause conflicts.
+# special_tokens:
+#  bos_token: "<s>"
+#  eos_token: "<|end|>"
+#  pad_token: "<pad>"
+#  unk_token: "<unk>"
+#  additional_special_tokens:
+#    - "<|system|>"
+#    - "<|user|>"
+#    - "<|assistant|>"
+
+save_safetensors: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+base_model: mistralai/Mistral-7B-v0.1
+# optionally might have model_type or tokenizer_type
+model_type: MistralForCausalLM
+tokenizer_type: LlamaTokenizer
+# Automatically upload checkpoint and final model to HF
+# hub_model_id: username/custom_model_name
+
+load_in_8bit: false
+load_in_4bit: true
+
+rl: orpo
+orpo_alpha: 0.1
+remove_unused_columns: false
+
+chat_template: chatml
+datasets:
+  - path: celsowm/auryn_dpo_orpo_english
+    type: chat_template.argilla
+dataset_prepared_path: last_run_prepared
+val_set_size: 0.1
+output_dir: ./outputs/mistral-qlora-orpo-out
+
+adapter: qlora
+lora_model_dir:
+
+sequence_len: 4096
+sample_packing: false
+pad_to_sequence_len: true
+
+lora_r: 32
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target_linear: true
+lora_target_modules:
+  - gate_proj
+  - down_proj
+  - up_proj
+  - q_proj
+  - v_proj
+  - k_proj
+  - o_proj
+
+wandb_project:
+wandb_entity:
+wandb_watch:
+wandb_name:
+wandb_log_model:
+
+gradient_accumulation_steps: 4
+micro_batch_size: 2
+num_epochs: 1
+optimizer: adamw_bnb_8bit
+lr_scheduler: cosine
+learning_rate: 0.0002
+
+bf16: auto
+tf32: false
+
+gradient_checkpointing: true
+resume_from_checkpoint:
+logging_steps: 1
+flash_attention: true
+
+loss_watchdog_threshold: 5.0
+loss_watchdog_patience: 3
+
+warmup_steps: 10
+evals_per_epoch: 4
+saves_per_epoch: 1
+weight_decay: 0.0
+special_tokens:
